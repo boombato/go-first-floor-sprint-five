@@ -10,6 +10,7 @@ const (
 	MInKm      = 1000
 	MinInHours = 60
 	LenStep    = 0.65
+	CmInM      = 100
 )
 
 type Training struct {
@@ -25,7 +26,11 @@ func (t Training) distance() float64 {
 }
 
 func (t Training) meanSpeed() float64 {
-	return t.distance() / t.Duration.Hours()
+	if t.Duration.Hours() != 0 {
+
+		return t.distance() / t.Duration.Hours()
+	}
+	return 0
 }
 
 func (t Training) Calories() float64 {
@@ -91,7 +96,7 @@ type Walking struct {
 
 func (w Walking) Calories() float64 {
 	speedInMPerS := w.meanSpeed() * KmHInMsec
-	return ((CaloriesWeightMultiplier*w.Weight + (math.Pow(speedInMPerS, 2)/(w.Height/100))*CaloriesSpeedHeightMultiplier*w.Weight) * w.Duration.Hours() * MinInHours)
+	return ((CaloriesWeightMultiplier*w.Weight + (math.Pow(speedInMPerS, 2)/(w.Height/CmInM))*CaloriesSpeedHeightMultiplier*w.Weight) * w.Duration.Hours() * MinInHours)
 }
 
 const (
@@ -107,7 +112,10 @@ type Swimming struct {
 }
 
 func (s Swimming) meanSpeed() float64 {
-	return float64(s.LengthPool*s.CountPool) / MInKm / s.Duration.Hours()
+	if s.Duration.Hours() != 0 {
+		return float64(s.LengthPool*s.CountPool) / MInKm / s.Duration.Hours()
+	}
+	return 0
 }
 
 func (s Swimming) Calories() float64 {
